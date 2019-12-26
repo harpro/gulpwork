@@ -5,5 +5,27 @@
   "main": "gulpfile.js",
   "repository": "git@github.com:harpro/gulpwork.git",
   "author": "Harper <harper.zhang@hotmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "cross-env": "^7.0.2",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-cached": "^1.1.1",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-imagemin": "^7.1.0",
+    "gulp-jshint": "^2.1.0",
+    "gulp-noop": "^1.0.0",
+    "gulp-remember": "^1.0.1",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2",
+    "js-yaml": "^3.13.1",
+    "jshint": "^2.11.0",
+    "slash": "^3.0.0",
+    "yargs": "^15.3.1"
+  }
 }
