@@ -1,0 +1,9 @@
+{
+  "name": "gulpwork",
+  "version": "1.0.0",
+  "description": "A gulp tool for building web front-end projects.",
+  "main": "gulpfile.js",
+  "repository": "git@github.com:harpro/gulpwork.git",
+  "author": "Harper <harper.zhang@hotmail.com>",
+  "license": "MIT"
+}
