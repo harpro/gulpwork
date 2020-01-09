@@ -108,3 +108,7 @@ dist
 
 # Target site config
 .target.yml
+
+# Sites source code
+/works/*
+!/works/_site/
