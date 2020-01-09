@@ -1,0 +1,29 @@
+vendors:
+  jquery:
+    scripts:
+      - "jquery/dist/jquery.js"
+  bootstrap:
+    styles:
+      - "bootstrap/dist/css/bootstrap.css"
+    scripts:
+      - "popper.js/dist/umd/popper.js"
+      - "bootstrap/dist/js/bootstrap.js"
+  font-awesome:
+    fonts:
+      - "font-awesome/fonts/*"
+    styles:
+      - "font-awesome/css/font-awesome.css"
+  swiper:
+    styles:
+      - "swiper/css/swiper.css"
+    scripts:
+      - "swiper/js/swiper.js"
+  wow:
+    styles:
+      - "animate.css/animate.css"
+    scripts:
+      - "wow.js/dist/wow.js"
+proxyServer:
+  rootPath: "../www"
+  urlPattern: "http://{siteName}.test"
+  # urlPattern: "http://localhost/{siteName}"

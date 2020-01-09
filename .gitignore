@@ -105,3 +105,6 @@ dist
 
 # VsCode settings
 .vscode/
+
+# Target site config
+.target.yml
