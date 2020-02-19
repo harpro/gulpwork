@@ -30,6 +30,7 @@
     "gulp-noop": "^1.0.0",
     "gulp-remember": "^1.0.1",
     "gulp-sass": "^4.0.2",
+    "gulp-sass-partials-imported": "^1.0.7",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "jquery": "^3.4.1",
