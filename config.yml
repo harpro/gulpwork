@@ -23,6 +23,11 @@ vendors:
       - "animate.css/animate.css"
     scripts:
       - "wow.js/dist/wow.js"
+  fancybox:
+    styles:
+      - "@fancyapps/fancybox/dist/jquery.fancybox.css"
+    scripts:
+      - "@fancyapps/fancybox/dist/jquery.fancybox.js"
 proxyServer:
   rootPath: "../www"
   urlPattern: "http://{siteName}.test"

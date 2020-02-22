@@ -13,6 +13,7 @@
   "author": "Harper <harper.zhang@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@fancyapps/fancybox": "^3.5.7",
     "animate.css": "^3.7.2",
     "bootstrap": "^4.4.1",
     "browser-sync": "^2.26.7",
