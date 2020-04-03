@@ -7,9 +7,12 @@
   "author": "Harper <harper.zhang@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "animate.css": "^3.7.2",
+    "bootstrap": "^4.4.1",
     "browser-sync": "^2.26.7",
     "cross-env": "^7.0.2",
     "del": "^5.1.0",
+    "font-awesome": "^4.7.0",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
     "gulp-cached": "^1.1.1",
@@ -23,9 +26,13 @@
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
+    "jquery": "^3.4.1",
     "js-yaml": "^3.13.1",
     "jshint": "^2.11.0",
+    "popper.js": "^1.16.1",
     "slash": "^3.0.0",
+    "swiper": "^5.3.6",
+    "wow.js": "^1.2.2",
     "yargs": "^15.3.1"
   }
 }
