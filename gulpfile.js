@@ -123,6 +123,7 @@ const _fonts = function (glob) {
 
 const _images = function (glob) {
   return src(glob, {
+    base: `works/${config.siteName}/images`,
     since: lastRun(images),
   })
     .pipe(imagemin())
