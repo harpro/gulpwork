@@ -268,7 +268,11 @@ function scripts() {
 
 function test() {
   return src(globs.scripts)
-    .pipe(jshint())
+    .pipe(
+      jshint({
+        esversion: 6,
+      })
+    )
     .pipe(jshint.reporter("default"))
     .pipe(jshint.reporter("fail"));
 }
