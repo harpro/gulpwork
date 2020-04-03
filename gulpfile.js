@@ -364,11 +364,47 @@ function server(cb) {
   cb();
 }
 
+function initWork(cb) {
+  if (!argv.name) {
+    throw new Error(
+      "Value for name paramer is not specified, please use: yarn work --name=value"
+    );
+  }
+  if (fs.existsSync(`works/${argv.name}`)) {
+    throw new Error("Target already exists");
+  }
+  if (!fs.existsSync(`works/${argv.origin}`)) {
+    argv.origin = "_site";
+  }
+  return src(`works/${argv.origin}/**/*`, {
+    base: `./works/${argv.origin}`,
+  }).pipe(dest(`works/${argv.name}`));
+}
+
+function writeReadme(cb) {
+  fs.writeFile(
+    `works/${argv.name}/README.md`,
+    `# ${argv.name}\n\n`,
+    {
+      flag: "w",
+    },
+    function (err) {
+      if (err) {
+        throw err;
+      }
+    }
+  );
+  cb();
+}
+
+const work = series(initWork, writeReadme);
 const start = series(
   clean,
   parallel(...vendors),
   parallel(fonts, images, styles, series(test, scripts), favicon, html),
   server
 );
+
+exports.work = work;
 exports.start = start;
 exports.default = start;
