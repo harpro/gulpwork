@@ -31,6 +31,9 @@ vendors:
   js-cookie:
     scripts:
       - "js-cookie/src/js.cookie.js"
+  packery:
+    scripts:
+      - "packery/dist/packery.pkgd.js"
 proxyServer:
   rootPath: "../www"
   urlPattern: "http://{siteName}.test"
