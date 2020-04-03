@@ -26,16 +26,19 @@ if (!fs.existsSync(".target.yml")) {
 }
 
 const target = yaml.safeLoad(fs.readFileSync(".target.yml", "utf8"));
-const config = yaml.safeLoad(fs.readFileSync("config.yml", "utf8"));
-const site = yaml.safeLoad(
-  fs.readFileSync(`works/${target.siteName}/config.yml`, "utf8")
+const config = Object.assign(
+  yaml.safeLoad(fs.readFileSync("config.yml", "utf8")),
+  target
 );
-const dist = target.proxy
-  ? `${config.proxyServer.rootPath}/${target.siteName}/static`
-  : `dist/${target.siteName}`;
+const site = yaml.safeLoad(
+  fs.readFileSync(`works/${config.siteName}/config.yml`, "utf8")
+);
+const dist = config.proxy
+  ? `${config.proxyServer.rootPath}/${config.siteName}/static`
+  : `dist/${config.siteName}`;
 
 const proxy = function () {
-  return config.proxyServer.urlPattern.replace(/{\w+}/, target.siteName);
+  return config.proxyServer.urlPattern.replace(/{\w+}/, config.siteName);
 };
 
 const isProd = process.env.NODE_ENV === "prod";
@@ -50,8 +53,8 @@ const prod = function (task) {
 
 console.log(" -------------------------------------- ");
 console.log("   ENV: " + (isProd ? "prod" : "dev"));
-console.log("  SITE: " + target.siteName);
-if (target.proxy) {
+console.log("  SITE: " + config.siteName);
+if (config.proxy) {
   console.log(" PROXY: " + proxy());
 }
 console.log(" -------------------------------------- ");
@@ -59,10 +62,10 @@ console.log(" -------------------------------------- ");
 const tastDelay = 5000;
 
 const port = argv.port || 9000;
-const bs = browserSync.create(target.siteName);
+const bs = browserSync.create(config.siteName);
 
-const scssDir = `works/${target.siteName}/styles`;
-const scssIncludePaths = [`works/${target.siteName}/styles/includes`];
+const scssDir = `works/${config.siteName}/styles`;
+const scssIncludePaths = [`works/${config.siteName}/styles/includes`];
 
 const isVendor = function (filename) {
   var ext = path.extname(filename);
@@ -90,7 +93,7 @@ const getGlob = function (dir, ext) {
   for (let item of site[dir]) {
     glob.push(`${dir}/${item}`);
   }
-  glob.push(`works/${target.siteName}/${dir}/**/*.${ext}`);
+  glob.push(`works/${config.siteName}/${dir}/**/*.${ext}`);
   return glob;
 };
 
@@ -102,7 +105,7 @@ const _html = function (glob) {
   return src(glob)
     .pipe(
       htmlmin(
-        target.beautify
+        config.beautify
           ? undefined
           : {
               collapseWhitespace: true,
@@ -145,7 +148,7 @@ const _styles = function (glob, filename) {
       minify(
         isVendor(filename)
           ? undefined
-          : target.beautify
+          : config.beautify
           ? {
               format: "beautify",
             }
@@ -175,7 +178,7 @@ const _scripts = function (glob, filename) {
       uglify(
         isVendor(filename)
           ? undefined
-          : target.beautify
+          : config.beautify
           ? {
               output: {
                 beautify: true,
@@ -224,10 +227,10 @@ const vendors = [
 ];
 
 const globs = {
-  fonts: [`works/${target.siteName}/fonts/**/*.*`],
-  images: [`works/${target.siteName}/images/**/*.*`],
-  favicon: [`works/${target.siteName}/favicon.ico`],
-  html: [`works/${target.siteName}/*.html`],
+  fonts: [`works/${config.siteName}/fonts/**/*.*`],
+  images: [`works/${config.siteName}/images/**/*.*`],
+  favicon: [`works/${config.siteName}/favicon.ico`],
+  html: [`works/${config.siteName}/*.html`],
   styles: getGlob("styles", "scss"),
   scripts: getGlob("scripts", "js"),
 };
@@ -274,7 +277,7 @@ function server(cb) {
     notify: false,
     port,
   };
-  if (target.proxy) {
+  if (config.proxy) {
     Object.assign(paramas, {
       proxy: proxy(),
     });
