@@ -12,6 +12,7 @@ const concat = require("gulp-concat");
 const cached = require("gulp-cached");
 const remember = require("gulp-remember");
 const sass = require("gulp-sass");
+const sassPartialsImported = require("gulp-sass-partials-imported");
 const minify = require("gulp-clean-css");
 const prefix = require("gulp-autoprefixer");
 const imagemin = require("gulp-imagemin");
@@ -55,11 +56,21 @@ if (target.proxy) {
 }
 console.log(" -------------------------------------- ");
 
+const tastDelay = 5000;
+
 const port = argv.port || 9000;
 const bs = browserSync.create(target.siteName);
 
-const scss = function (task, filename) {
-  return filename === "vendor.css" ? noop() : task;
+const scssDir = `works/${target.siteName}/styles`;
+const scssIncludePaths = [`works/${target.siteName}/styles/includes`];
+
+const isVendor = function (filename) {
+  var ext = path.extname(filename);
+  return path.basename(filename, ext) === "vendor";
+};
+
+const sassOf = function (task, filename) {
+  return isVendor(filename) ? noop() : task;
 };
 
 const getVendorsGlob = function (dir) {
@@ -74,12 +85,12 @@ const getVendorsGlob = function (dir) {
   return glob;
 };
 
-const getGlob = function (dir) {
+const getGlob = function (dir, ext) {
   let glob = [];
   for (let item of site[dir]) {
     glob.push(`${dir}/${item}`);
   }
-  glob.push(`works/${target.siteName}/${dir}/*.*`);
+  glob.push(`works/${target.siteName}/${dir}/**/*.${ext}`);
   return glob;
 };
 
@@ -119,12 +130,20 @@ const _styles = function (glob, filename) {
   return src(glob, {
     since: lastRun(styles),
   })
-    .pipe(dev(sourcemaps.init()))
     .pipe(cached(filename))
-    .pipe(scss(sass().on("error", sass.logError), filename))
+    .pipe(sassOf(sassPartialsImported(scssDir, scssIncludePaths), filename))
+    .pipe(dev(sourcemaps.init()))
+    .pipe(
+      sassOf(
+        sass({
+          includePaths: scssIncludePaths,
+        }).on("error", sass.logError),
+        filename
+      )
+    )
     .pipe(
       minify(
-        filename === "vendor.css"
+        isVendor(filename)
           ? undefined
           : target.beautify
           ? {
@@ -154,7 +173,7 @@ const _scripts = function (glob, filename) {
     .pipe(cached(filename))
     .pipe(
       uglify(
-        filename === "vendor.js"
+        isVendor(filename)
           ? undefined
           : target.beautify
           ? {
@@ -189,7 +208,7 @@ const vendors = [
   function vendorsStyles(cb) {
     let glob = getVendorsGlob("styles");
     if (glob.length > 0) {
-      return _styles(glob, "vendor.css");
+      return _styles(glob, "vendor.css", null);
     } else {
       cb();
     }
@@ -205,12 +224,12 @@ const vendors = [
 ];
 
 const globs = {
-  fonts: [`works/${target.siteName}/fonts/*`],
-  images: [`works/${target.siteName}/images/*`],
-  html: [`works/${target.siteName}/*.html`],
+  fonts: [`works/${target.siteName}/fonts/**/*.*`],
+  images: [`works/${target.siteName}/images/**/*.*`],
   favicon: [`works/${target.siteName}/favicon.ico`],
-  styles: getGlob("styles"),
-  scripts: getGlob("scripts"),
+  html: [`works/${target.siteName}/*.html`],
+  styles: getGlob("styles", "scss"),
+  scripts: getGlob("scripts", "js"),
 };
 
 function clean() {
@@ -276,7 +295,7 @@ function server(cb) {
           watch(
             globs.fonts,
             {
-              delay: 3000,
+              delay: tastDelay,
             },
             fonts
           ).on("unlink", function (filepath) {
@@ -288,7 +307,7 @@ function server(cb) {
           watch(
             globs.images,
             {
-              delay: 3000,
+              delay: tastDelay,
             },
             images
           ).on("unlink", function (filepath) {
@@ -303,12 +322,7 @@ function server(cb) {
             });
           });
 
-          watch(
-            globs.styles.concat([
-              `works/${config.site}/styles/includes/*.scss`,
-            ]),
-            styles
-          ).on("unlink", function (filepath) {
+          watch(globs.styles, styles).on("unlink", function (filepath) {
             delete cached.caches["main.css"][path.join(__dirname, filepath)];
             remember.forget(
               "main.css",
