@@ -19,6 +19,7 @@ const imagemin = require("gulp-imagemin");
 const uglify = require("gulp-uglify");
 const jshint = require("gulp-jshint");
 const htmlmin = require("gulp-htmlmin");
+const babel = require("gulp-babel");
 
 if (!fs.existsSync(".target.yml")) {
   throw new Error("Please create .target.yml file in current path");
@@ -73,6 +74,10 @@ const isVendor = function (filename) {
 };
 
 const sassOf = function (task, filename) {
+  return isVendor(filename) ? noop() : task;
+};
+
+const babelOf = function (task, filename) {
   return isVendor(filename) ? noop() : task;
 };
 
@@ -175,6 +180,14 @@ const _scripts = function (glob, filename) {
   })
     .pipe(dev(sourcemaps.init()))
     .pipe(cached(filename))
+    .pipe(
+      babelOf(
+        babel({
+          presets: ["@babel/env"],
+        }),
+        filename
+      )
+    )
     .pipe(
       uglify(
         isVendor(filename)

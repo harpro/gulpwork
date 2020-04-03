@@ -13,6 +13,8 @@
   "author": "Harper <harper.zhang@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
     "@fancyapps/fancybox": "^3.5.7",
     "animate.css": "^3.7.2",
     "bootstrap": "^4.4.1",
@@ -22,6 +24,7 @@
     "font-awesome": "^4.7.0",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
+    "gulp-babel": "^8.0.0",
     "gulp-cached": "^1.1.1",
     "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
