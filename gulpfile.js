@@ -21,25 +21,25 @@ const jshint = require("gulp-jshint");
 const htmlmin = require("gulp-htmlmin");
 const babel = require("gulp-babel");
 
-if (!fs.existsSync(".target.yml")) {
-  throw new Error("Please create .target.yml file in current path");
+if (!fs.existsSync("work.yml")) {
+  throw new Error("Please create work.yml file in current path");
   return false;
 }
 
-const target = yaml.safeLoad(fs.readFileSync(".target.yml", "utf8"));
+const work = yaml.safeLoad(fs.readFileSync("work.yml", "utf8"));
 const config = Object.assign(
   yaml.safeLoad(fs.readFileSync("config.yml", "utf8")),
-  target
+  work
 );
 const site = yaml.safeLoad(
-  fs.readFileSync(`works/${config.siteName}/config.yml`, "utf8")
+  fs.readFileSync(`works/${config.name}/config.yml`, "utf8")
 );
 const dist = config.proxy
-  ? `${config.proxyServer.rootPath}/${config.siteName}/static`
-  : `dist/${config.siteName}`;
+  ? `${config.proxyServer.rootPath}/${config.name}/static`
+  : `dist/${config.name}`;
 
 const proxy = function () {
-  return config.proxyServer.urlPattern.replace(/{\w+}/, config.siteName);
+  return config.proxyServer.urlPattern.replace(/{\w+}/, config.name);
 };
 
 const isProd = process.env.NODE_ENV === "prod";
@@ -52,21 +52,34 @@ const prod = function (task) {
   return isProd ? task : noop();
 };
 
-console.log(" -------------------------------------- ");
-console.log("   ENV: " + (isProd ? "prod" : "dev"));
-console.log("  SITE: " + config.siteName);
-if (config.proxy) {
-  console.log(" PROXY: " + proxy());
-}
-console.log(" -------------------------------------- ");
+const [script] = argv._;
+console.info(`\n[GULPWORK] Script: ${script}`);
 
-const tastDelay = 5000;
+if (script == "clone") {
+  if (!argv.origin) {
+    argv.origin = "default";
+  }
+  console.info(" --------------------------------------");
+  console.info("     NAME: " + argv.name);
+  console.info("   ORIGIN: " + argv.origin);
+  console.info(" --------------------------------------");
+} else {
+  console.info(" --------------------------------------");
+  console.info("      ENV: " + (isProd ? "prod" : "dev"));
+  console.info("     WORK: " + config.name);
+  if (config.proxy) {
+    console.info("    PROXY: " + proxy());
+  }
+  console.info(" --------------------------------------");
+}
+
+const taskDelay = 5000;
 
 const port = argv.port || 9000;
-const bs = browserSync.create(config.siteName);
+const bs = browserSync.create(config.name);
 
-const scssDir = `works/${config.siteName}/styles`;
-const scssIncludePaths = [`works/${config.siteName}/styles/includes`];
+const scssDir = `works/${config.name}/styles`;
+const scssIncludePaths = [`works/${config.name}/styles/includes`];
 
 const isVendor = function (filename) {
   var ext = path.extname(filename);
@@ -98,7 +111,7 @@ const getGlob = function (dir, ext) {
   for (let item of site[dir]) {
     glob.push(`${dir}/${item}`);
   }
-  glob.push(`works/${config.siteName}/${dir}/**/*.${ext}`);
+  glob.push(`works/${config.name}/${dir}/**/*.${ext}`);
   return glob;
 };
 
@@ -128,7 +141,7 @@ const _fonts = function (glob) {
 
 const _images = function (glob) {
   return src(glob, {
-    base: `works/${config.siteName}/images`,
+    base: `works/${config.name}/images`,
     since: lastRun(images),
   })
     .pipe(imagemin())
@@ -241,10 +254,10 @@ const vendors = [
 ];
 
 const globs = {
-  fonts: [`works/${config.siteName}/fonts/**/*.*`],
-  images: [`works/${config.siteName}/images/**/*.*`],
-  favicon: [`works/${config.siteName}/favicon.ico`],
-  html: [`works/${config.siteName}/*.html`],
+  fonts: [`works/${config.name}/fonts/**/*.*`],
+  images: [`works/${config.name}/images/**/*.*`],
+  favicon: [`works/${config.name}/favicon.ico`],
+  html: [`works/${config.name}/*.html`],
   styles: getGlob("styles", "scss"),
   scripts: getGlob("scripts", "js"),
 };
@@ -311,70 +324,69 @@ function server(cb) {
     (function () {
       if (isProd) {
         return function () {};
-      } else {
-        return function () {
-          watch(
-            globs.fonts,
-            {
-              delay: tastDelay,
-            },
-            fonts
-          ).on("unlink", function (filepath) {
-            del(slash(path.join(dist, "fonts", path.basename(filepath))), {
-              force: true,
-            });
-          });
-
-          watch(
-            globs.images,
-            {
-              delay: tastDelay,
-            },
-            images
-          ).on("unlink", function (filepath) {
-            del(slash(path.join(dist, "images", path.basename(filepath))), {
-              force: true,
-            });
-          });
-
-          watch(globs.html, html).on("unlink", function (filepath) {
-            del(slash(path.join(dist, path.basename(filepath))), {
-              force: true,
-            });
-          });
-
-          watch(globs.styles, styles).on("unlink", function (filepath) {
-            delete cached.caches["main.css"][path.join(__dirname, filepath)];
-            remember.forget(
-              "main.css",
-              path.join(__dirname, filepath.replace(/\.scss$/i, ".css"))
-            );
-          });
-
-          watch(globs.scripts, scripts).on("unlink", function (filepath) {
-            delete cached.caches["main.js"][path.join(__dirname, filepath)];
-            remember.forget("main.js", path.join(__dirname, filepath));
-          });
-
-          watch(`${dist}/**/*`).on("change", bs.reload).on("unlink", bs.reload);
-        };
       }
+      return function () {
+        watch(
+          globs.fonts,
+          {
+            delay: taskDelay,
+          },
+          fonts
+        ).on("unlink", function (filepath) {
+          del(slash(path.join(dist, "fonts", path.basename(filepath))), {
+            force: true,
+          });
+        });
+
+        watch(
+          globs.images,
+          {
+            delay: taskDelay,
+          },
+          images
+        ).on("unlink", function (filepath) {
+          del(slash(path.join(dist, "images", path.basename(filepath))), {
+            force: true,
+          });
+        });
+
+        watch(globs.html, html).on("unlink", function (filepath) {
+          del(slash(path.join(dist, path.basename(filepath))), {
+            force: true,
+          });
+        });
+
+        watch(globs.styles, styles).on("unlink", function (filepath) {
+          delete cached.caches["main.css"][path.join(__dirname, filepath)];
+          remember.forget(
+            "main.css",
+            path.join(__dirname, filepath.replace(/\.scss$/i, ".css"))
+          );
+        });
+
+        watch(globs.scripts, scripts).on("unlink", function (filepath) {
+          delete cached.caches["main.js"][path.join(__dirname, filepath)];
+          remember.forget("main.js", path.join(__dirname, filepath));
+        });
+
+        watch(`${dist}/**/*`).on("change", bs.reload).on("unlink", bs.reload);
+      };
     })()
   );
   cb();
 }
 
 function initWork(cb) {
+  if (!fs.existsSync(`works/${argv.origin}`)) {
+    throw new Error("Origin not exists");
+  }
   if (!argv.name) {
     throw new Error(
-      "Value for name paramer is not specified, please use: yarn work --name=value"
+      "Value for name paramer is not specified, please use: yarn clone --name=value"
     );
   }
   if (fs.existsSync(`works/${argv.name}`)) {
-    throw new Error("Target already exists");
-  }
-  if (!fs.existsSync(`works/${argv.origin}`)) {
-    argv.origin = "_site";
+    throw new Error("Dest already exists");
   }
   return src(`works/${argv.origin}/**/*`, {
     base: `./works/${argv.origin}`,
@@ -384,7 +396,7 @@ function initWork(cb) {
 function writeReadme(cb) {
   fs.writeFile(
     `works/${argv.name}/README.md`,
-    `# ${argv.name}\n\n`,
+    `# ${argv.name.slice(0, 1).toUpperCase() + argv.name.slice(1)}\n\n`,
     {
       flag: "w",
     },
@@ -397,7 +409,7 @@ function writeReadme(cb) {
   cb();
 }
 
-const work = series(initWork, writeReadme);
+const clone = series(initWork, writeReadme);
 const start = series(
   clean,
   parallel(...vendors),
@@ -405,6 +417,6 @@ const start = series(
   server
 );
 
-exports.work = work;
+exports.clone = clone;
 exports.start = start;
 exports.default = start;

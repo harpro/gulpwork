@@ -7,7 +7,7 @@
     "start:prod": "cross-env NODE_ENV=prod gulp start",
     "start": "gulp start",
     "build": "yarn run start:prod",
-    "work": "gulp work",
+    "clone": "gulp clone",
     "tasks": "gulp --tasks"
   },
   "repository": "git@github.com:harpro/gulpwork.git",

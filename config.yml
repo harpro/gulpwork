@@ -36,5 +36,5 @@ vendors:
       - "packery/dist/packery.pkgd.js"
 proxyServer:
   rootPath: "../www"
-  urlPattern: "http://{siteName}.test"
-  # urlPattern: "http://localhost/{siteName}"
+  urlPattern: "http://{name}.test"
+  # urlPattern: "http://localhost/{name}"

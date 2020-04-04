@@ -107,8 +107,8 @@ dist
 .vscode/
 
 # Target site config
-.target.yml
+work.yml
 
 # Sites source code
 /works/*
-!/works/_site/
+!/works/default
