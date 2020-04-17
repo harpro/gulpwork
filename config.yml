@@ -35,6 +35,5 @@ vendors:
     scripts:
       - "packery/dist/packery.pkgd.js"
 proxyServer:
-  rootPath: "../www"
   urlPattern: "http://{name}.test"
-  # urlPattern: "http://localhost/{name}"
+  distPattern: "../www/{name}/public/static"

@@ -23,7 +23,6 @@ const babel = require("gulp-babel");
 
 if (!fs.existsSync("work.yml")) {
   throw new Error("Please create work.yml file in current path");
-  return false;
 }
 
 const work = yaml.safeLoad(fs.readFileSync("work.yml", "utf8"));
@@ -34,12 +33,15 @@ const config = Object.assign(
 const site = yaml.safeLoad(
   fs.readFileSync(`works/${config.name}/config.yml`, "utf8")
 );
+
 const dist = config.proxy
-  ? `${config.proxyServer.rootPath}/${config.name}/static`
+  ? config.distPattern
+    ? config.distPattern.replace("{name}", config.name)
+    : config.proxyServer.distPattern.replace("{name}", config.name)
   : `dist/${config.name}`;
 
 const proxy = function () {
-  return config.proxyServer.urlPattern.replace(/{\w+}/, config.name);
+  return config.proxyServer.urlPattern.replace("{name}", config.name);
 };
 
 const isProd = process.env.NODE_ENV === "prod";
@@ -69,6 +71,7 @@ if (script == "clone") {
   console.info("     WORK: " + config.name);
   if (config.proxy) {
     console.info("    PROXY: " + proxy());
+    console.info("     DIST: " + dist);
   }
   console.info(" --------------------------------------");
 }
